@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Vector2 } from 'three';
+import { useState, useEffect } from "react";
+import { Vector2 } from "three";
 
 export interface Mouse {
 	coords: Vector2;
@@ -14,7 +14,12 @@ const useMouseTracker = (): Mouse => {
 
 	const setCoords = (x: number, y: number) => {
 		setPrevCoords(coords.clone());
-		setCoordsState(new Vector2((x / window.innerWidth) * 2 - 1, - (y / window.innerHeight) * 2 + 1));
+		setCoordsState(
+			new Vector2(
+				(x / window.innerWidth) * 2 - 1,
+				-(y / window.innerHeight) * 2 + 1,
+			),
+		);
 	};
 
 	useEffect(() => {
@@ -27,16 +32,16 @@ const useMouseTracker = (): Mouse => {
 				setCoords(event.touches[0].pageX, event.touches[0].pageY);
 			}
 			setDiff(coords.clone().sub(prevCoords));
-		}
+		};
 
-		window.addEventListener('mousemove', handleMouseMove);
-		window.addEventListener('touchstart', handleTouch);
-		window.addEventListener('touchmove', handleTouch);
+		window.addEventListener("mousemove", handleMouseMove);
+		window.addEventListener("touchstart", handleTouch);
+		window.addEventListener("touchmove", handleTouch);
 
 		return () => {
-			window.removeEventListener('mousemove', handleMouseMove);
-			window.removeEventListener('touchstart', handleTouch);
-			window.removeEventListener('touchmove', handleTouch);
+			window.removeEventListener("mousemove", handleMouseMove);
+			window.removeEventListener("touchstart", handleTouch);
+			window.removeEventListener("touchmove", handleTouch);
 		};
 	}, [coords]);
 

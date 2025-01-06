@@ -1,13 +1,13 @@
-const path = require('path');
-const TerserPlugin = require('terser-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require("node:path");
+const TerserPlugin = require("terser-webpack-plugin");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
-	mode: 'production',
-	entry: './src/index.tsx',
+	mode: "production",
+	entry: "./src/index.tsx",
 	output: {
-		filename: 'main.min.js',
-		path: __dirname + "/dist",
+		filename: "main.min.js",
+		path: `${__dirname}/dist`,
 		library: "StableFluids",
 		libraryTarget: "umd",
 		globalObject: "this",
@@ -19,34 +19,34 @@ module.exports = {
 				exclude: /node_modules/,
 				use: [
 					{
-						loader: 'babel-loader',
+						loader: "babel-loader",
 						options: {
-							presets: [['@babel/preset-env', { modules: false }]]
-						}
-					}
-				]
+							presets: [["@babel/preset-env", { modules: false }]],
+						},
+					},
+				],
 			},
 			{
 				test: /\.(vert|frag|obj)$/i,
-				use: 'raw-loader',
-			}
+				use: "raw-loader",
+			},
 		],
 	},
 	resolve: {
-		extensions: ['.js', '.jsx', '.ts', '.tsx'],
+		extensions: [".js", ".jsx", ".ts", ".tsx"],
 	},
 	externals: {
 		react: {
-			commonjs: 'react',
-			commonjs2: 'react',
-			amd: 'React',
-			root: 'React',
+			commonjs: "react",
+			commonjs2: "react",
+			amd: "React",
+			root: "React",
 		},
-		'react-dom': {
-			commonjs: 'react-dom',
-			commonjs2: 'react-dom',
-			amd: 'ReactDOM',
-			root: 'ReactDOM',
+		"react-dom": {
+			commonjs: "react-dom",
+			commonjs2: "react-dom",
+			amd: "ReactDOM",
+			root: "ReactDOM",
 		},
 	},
 	optimization: {
@@ -54,25 +54,25 @@ module.exports = {
 		minimizer: [
 			new TerserPlugin({
 				test: /\.js(\?.*)?$/i,
-			})
+			}),
 		],
 	},
 	plugins: [
 		new HtmlWebpackPlugin({
-			template: './src/test.html',
+			template: "./src/test.html",
 		}),
 	],
 	devServer: {
 		static: {
-			directory: path.join(__dirname, 'dist'),
+			directory: path.join(__dirname, "dist"),
 		},
 		compress: false,
 		open: true,
 		port: 3001,
-		host: '0.0.0.0',
+		host: "0.0.0.0",
 		hot: true,
-		allowedHosts: 'all'
+		allowedHosts: "all",
 	},
 
-	devtool: 'inline-source-map'
+	devtool: "inline-source-map",
 };

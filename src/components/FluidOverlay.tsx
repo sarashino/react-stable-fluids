@@ -1,6 +1,6 @@
-import { Canvas} from '@react-three/fiber'
+import { Canvas } from "@react-three/fiber";
 
-import Output, { OutputProps } from './FluidOverlay/Output';
+import Output, { type OutputProps } from "./FluidOverlay/Output";
 
 export interface FluidOverlayProps {
 	options: OutputProps;
@@ -16,17 +16,18 @@ const FluidOverlay = ({
 		viscous: 150,
 		isBounce: true,
 		dt: 0.014,
-		BFECC: true
-	}
+		BFECC: true,
+	},
 }: FluidOverlayProps) => {
-	return <Canvas
-      onCreated={({ gl }) => {
-        gl.autoClear = false;
-      }}
-	>
-		<Output options={options} />
-	</Canvas>;
+	return (
+		<Canvas
+			onCreated={({ gl }) => {
+				gl.autoClear = false;
+			}}
+		>
+			<Output options={options} />
+		</Canvas>
+	);
 };
-
 
 export default FluidOverlay;

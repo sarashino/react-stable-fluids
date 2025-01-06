@@ -1,0 +1,346 @@
+src/components/FluidOverlay/Divergence.tsx:77:3 lint/correctness/useExhaustiveDependencies ━━━━━━━━━━
+
+  × This hook does not specify all of its dependencies: scene.add
+  
+    75 │ 		}, []);
+    76 │ 
+  > 77 │ 		useEffect(() => {
+       │ 		^^^^^^^^^
+    78 │ 			if (plane) scene.add(plane);
+    79 │ 		}, [plane]);
+  
+  i This dependency is not specified in the hook dependency list.
+  
+    77 │ 		useEffect(() => {
+  > 78 │ 			if (plane) scene.add(plane);
+       │ 			           ^^^^^^^^^
+    79 │ 		}, [plane]);
+    80 │ 
+  
+
+src/components/FluidOverlay/Pressure.tsx:85:3 lint/correctness/useExhaustiveDependencies ━━━━━━━━━━━
+
+  × This hook does not specify all of its dependencies: scene.add
+  
+    83 │ 		}, []);
+    84 │ 
+  > 85 │ 		useEffect(() => {
+       │ 		^^^^^^^^^
+    86 │ 			if (plane) scene.add(plane);
+    87 │ 		}, [plane]);
+  
+  i This dependency is not specified in the hook dependency list.
+  
+    85 │ 		useEffect(() => {
+  > 86 │ 			if (plane) scene.add(plane);
+       │ 			           ^^^^^^^^^
+    87 │ 		}, [plane]);
+    88 │ 
+  
+
+src/components/FluidOverlay/MouseTracker.tsx:25:2 lint/correctness/useExhaustiveDependencies ━━━━━━━━━━
+
+  × This hook does not specify all of its dependencies: prevCoords
+  
+    23 │ 	};
+    24 │ 
+  > 25 │ 	useEffect(() => {
+       │ 	^^^^^^^^^
+    26 │ 		const handleMouseMove = (event: MouseEvent) => {
+    27 │ 			setCoords(event.clientX, event.clientY);
+  
+  i This dependency is not specified in the hook dependency list.
+  
+    32 │ 				setCoords(event.touches[0].pageX, event.touches[0].pageY);
+    33 │ 			}
+  > 34 │ 			setDiff(coords.clone().sub(prevCoords));
+       │ 			                           ^^^^^^^^^^
+    35 │ 		};
+    36 │ 
+  
+  i This dependency is not specified in the hook dependency list.
+  
+    26 │ 		const handleMouseMove = (event: MouseEvent) => {
+    27 │ 			setCoords(event.clientX, event.clientY);
+  > 28 │ 			setDiff(coords.clone().sub(prevCoords));
+       │ 			                           ^^^^^^^^^^
+    29 │ 		};
+    30 │ 		const handleTouch = (event: TouchEvent) => {
+  
+
+src/components/FluidOverlay/MouseTracker.tsx:25:2 lint/correctness/useExhaustiveDependencies ━━━━━━━━━━
+
+  × This hook does not specify all of its dependencies: setCoords
+  
+    23 │ 	};
+    24 │ 
+  > 25 │ 	useEffect(() => {
+       │ 	^^^^^^^^^
+    26 │ 		const handleMouseMove = (event: MouseEvent) => {
+    27 │ 			setCoords(event.clientX, event.clientY);
+  
+  i This dependency is not specified in the hook dependency list.
+  
+    30 │ 		const handleTouch = (event: TouchEvent) => {
+    31 │ 			if (event.touches.length === 1) {
+  > 32 │ 				setCoords(event.touches[0].pageX, event.touches[0].pageY);
+       │ 				^^^^^^^^^
+    33 │ 			}
+    34 │ 			setDiff(coords.clone().sub(prevCoords));
+  
+  i This dependency is not specified in the hook dependency list.
+  
+    25 │ 	useEffect(() => {
+    26 │ 		const handleMouseMove = (event: MouseEvent) => {
+  > 27 │ 			setCoords(event.clientX, event.clientY);
+       │ 			^^^^^^^^^
+    28 │ 			setDiff(coords.clone().sub(prevCoords));
+    29 │ 		};
+  
+
+src/components/FluidOverlay/Poisson.tsx:79:3 lint/correctness/useExhaustiveDependencies ━━━━━━━━━━━━
+
+  × This hook does not specify all of its dependencies: scene.add
+  
+    77 │ 		}, []);
+    78 │ 
+  > 79 │ 		useEffect(() => {
+       │ 		^^^^^^^^^
+    80 │ 			if (plane) scene.add(plane);
+    81 │ 		}, [plane]);
+  
+  i This dependency is not specified in the hook dependency list.
+  
+    79 │ 		useEffect(() => {
+  > 80 │ 			if (plane) scene.add(plane);
+       │ 			           ^^^^^^^^^
+    81 │ 		}, [plane]);
+    82 │ 
+  
+
+src/components/FluidOverlay/Viscous.tsx:95:3 lint/correctness/useExhaustiveDependencies ━━━━━━━━━━━━
+
+  × This hook does not specify all of its dependencies: scene.add
+  
+    93 │ 		}, []);
+    94 │ 
+  > 95 │ 		useEffect(() => {
+       │ 		^^^^^^^^^
+    96 │ 			if (plane) scene.add(plane);
+    97 │ 		}, [plane]);
+  
+  i This dependency is not specified in the hook dependency list.
+  
+    95 │ 		useEffect(() => {
+  > 96 │ 			if (plane) scene.add(plane);
+       │ 			           ^^^^^^^^^
+    97 │ 		}, [plane]);
+    98 │ 
+  
+
+src/components/FluidOverlay/Advection.tsx:115:3 lint/correctness/useExhaustiveDependencies ━━━━━━━━━━
+
+  × This hook does not specify all of its dependencies: lineSegs
+  
+    113 │ 		});
+    114 │ 
+  > 115 │ 		useEffect(() => {
+        │ 		^^^^^^^^^
+    116 │ 			uniformsRef.current.dt.value = simProps.dt;
+    117 │ 			if (lineSegs) lineSegs.visible = simProps.isBounce;
+  
+  i This dependency is not specified in the hook dependency list.
+  
+    115 │ 		useEffect(() => {
+    116 │ 			uniformsRef.current.dt.value = simProps.dt;
+  > 117 │ 			if (lineSegs) lineSegs.visible = simProps.isBounce;
+        │ 			              ^^^^^^^^
+    118 │ 			uniformsRef.current.isBFECC.value = !!simProps.BFECC;
+    119 │ 		}, [simProps]);
+  
+  i This dependency is not specified in the hook dependency list.
+  
+    115 │ 		useEffect(() => {
+    116 │ 			uniformsRef.current.dt.value = simProps.dt;
+  > 117 │ 			if (lineSegs) lineSegs.visible = simProps.isBounce;
+        │ 			    ^^^^^^^^
+    118 │ 			uniformsRef.current.isBFECC.value = !!simProps.BFECC;
+    119 │ 		}, [simProps]);
+  
+
+src/components/FluidOverlay/Advection.tsx:157:3 lint/correctness/useExhaustiveDependencies ━━━━━━━━━━
+
+  × This hook does not specify all of its dependencies: scene.add
+  
+    155 │ 		}, []);
+    156 │ 
+  > 157 │ 		useEffect(() => {
+        │ 		^^^^^^^^^
+    158 │ 			if (plane) scene.add(plane);
+    159 │ 		}, [plane]);
+  
+  i This dependency is not specified in the hook dependency list.
+  
+    157 │ 		useEffect(() => {
+  > 158 │ 			if (plane) scene.add(plane);
+        │ 			           ^^^^^^^^^
+    159 │ 		}, [plane]);
+    160 │ 		useEffect(() => {
+  
+
+src/components/FluidOverlay/Advection.tsx:160:3 lint/correctness/useExhaustiveDependencies ━━━━━━━━━━
+
+  × This hook does not specify all of its dependencies: scene.add
+  
+    158 │ 			if (plane) scene.add(plane);
+    159 │ 		}, [plane]);
+  > 160 │ 		useEffect(() => {
+        │ 		^^^^^^^^^
+    161 │ 			if (lineSegs) scene.add(lineSegs);
+    162 │ 		}, [lineSegs]);
+  
+  i This dependency is not specified in the hook dependency list.
+  
+    159 │ 		}, [plane]);
+    160 │ 		useEffect(() => {
+  > 161 │ 			if (lineSegs) scene.add(lineSegs);
+        │ 			              ^^^^^^^^^
+    162 │ 		}, [lineSegs]);
+    163 │ 
+  
+
+src/components/FluidOverlay/Output.tsx:70:24 lint/correctness/useExhaustiveDependencies ━━━━━━━━━━━━
+
+  × This hook does not specify all of its dependencies: options.isBounce
+  
+    68 │ 	const fboSize = new Vector2();
+    69 │ 	const { fbos, fbosResize } = useFBOs();
+  > 70 │ 	const boundarySpace = useMemo(
+       │ 	                      ^^^^^^^
+    71 │ 		() => (options.isBounce ? new Vector2() : cellScale.clone()),
+    72 │ 		[cellScale],
+  
+  i This dependency is not specified in the hook dependency list.
+  
+    69 │ 	const { fbos, fbosResize } = useFBOs();
+    70 │ 	const boundarySpace = useMemo(
+  > 71 │ 		() => (options.isBounce ? new Vector2() : cellScale.clone()),
+       │ 		       ^^^^^^^^^^^^^^^^
+    72 │ 		[cellScale],
+    73 │ 	);
+  
+
+src/components/FluidOverlay/Output.tsx:118:2 lint/correctness/useExhaustiveDependencies ━━━━━━━━━━━━
+
+  × This hook does not specify all of its dependencies: height
+  
+    116 │ 	const pressureRef = useRef(null);
+    117 │ 
+  > 118 │ 	useEffect(() => {
+        │ 	^^^^^^^^^
+    119 │ 		onResize(width, height);
+    120 │ 		scene.add(planeRef.current);
+  
+  i This dependency is not specified in the hook dependency list.
+  
+    118 │ 	useEffect(() => {
+  > 119 │ 		onResize(width, height);
+        │ 		                ^^^^^^
+    120 │ 		scene.add(planeRef.current);
+    121 │ 	}, []);
+  
+  i Either include it or remove the dependency array
+  
+
+src/components/FluidOverlay/Output.tsx:118:2 lint/correctness/useExhaustiveDependencies ━━━━━━━━━━━━
+
+  × This hook does not specify all of its dependencies: scene.add
+  
+    116 │ 	const pressureRef = useRef(null);
+    117 │ 
+  > 118 │ 	useEffect(() => {
+        │ 	^^^^^^^^^
+    119 │ 		onResize(width, height);
+    120 │ 		scene.add(planeRef.current);
+  
+  i This dependency is not specified in the hook dependency list.
+  
+    118 │ 	useEffect(() => {
+    119 │ 		onResize(width, height);
+  > 120 │ 		scene.add(planeRef.current);
+        │ 		^^^^^^^^^
+    121 │ 	}, []);
+    122 │ 
+  
+  i Either include it or remove the dependency array
+  
+
+src/components/FluidOverlay/Output.tsx:118:2 lint/correctness/useExhaustiveDependencies ━━━━━━━━━━━━
+
+  × This hook does not specify all of its dependencies: onResize
+  
+    116 │ 	const pressureRef = useRef(null);
+    117 │ 
+  > 118 │ 	useEffect(() => {
+        │ 	^^^^^^^^^
+    119 │ 		onResize(width, height);
+    120 │ 		scene.add(planeRef.current);
+  
+  i This dependency is not specified in the hook dependency list.
+  
+    118 │ 	useEffect(() => {
+  > 119 │ 		onResize(width, height);
+        │ 		^^^^^^^^
+    120 │ 		scene.add(planeRef.current);
+    121 │ 	}, []);
+  
+  i Either include it or remove the dependency array
+  
+
+src/components/FluidOverlay/Output.tsx:118:2 lint/correctness/useExhaustiveDependencies ━━━━━━━━━━━━
+
+  × This hook does not specify all of its dependencies: width
+  
+    116 │ 	const pressureRef = useRef(null);
+    117 │ 
+  > 118 │ 	useEffect(() => {
+        │ 	^^^^^^^^^
+    119 │ 		onResize(width, height);
+    120 │ 		scene.add(planeRef.current);
+  
+  i This dependency is not specified in the hook dependency list.
+  
+    118 │ 	useEffect(() => {
+  > 119 │ 		onResize(width, height);
+        │ 		         ^^^^^
+    120 │ 		scene.add(planeRef.current);
+    121 │ 	}, []);
+  
+  i Either include it or remove the dependency array
+  
+
+src/components/FluidOverlay/ExternalForce.tsx:91:2 lint/correctness/useExhaustiveDependencies ━━━━━━━━━━
+
+  × This hook does not specify all of its dependencies: scene.add
+  
+    89 │ 	}, []);
+    90 │ 
+  > 91 │ 	useEffect(() => {
+       │ 	^^^^^^^^^
+    92 │ 		if (mouse) scene.add(mouse);
+    93 │ 	}, [mouse]);
+  
+  i This dependency is not specified in the hook dependency list.
+  
+    91 │ 	useEffect(() => {
+  > 92 │ 		if (mouse) scene.add(mouse);
+       │ 		           ^^^^^^^^^
+    93 │ 	}, [mouse]);
+    94 │ 
+  
+
+lint ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Some errors were emitted while running checks.
+  
+
