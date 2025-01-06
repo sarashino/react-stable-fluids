@@ -1,0 +1,35 @@
+{
+	"compilerOptions": {
+		"target": "ES6",
+		"module": "ESNext",
+		"lib": ["DOM", "DOM.Iterable", "ESNext"],
+		"allowJs": false,
+		"skipLibCheck": true,
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		"strict": true,
+		"forceConsistentCasingInFileNames": true,
+		"declaration": true,
+		"declarationDir": "./dist/types",
+		"outDir": "./dist",
+		"noEmit": true,
+		"jsx": "react-jsx",
+		"moduleResolution": "node",
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitReturns": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noImplicitAny": true,
+		"baseUrl": "./src",
+		"paths": {
+			"@components/*": ["components/*"],
+			"@utils/*": ["utils/*"]
+		},
+		"typeRoots": ["node_modules/@types"],
+		"types": ["three"]
+	},
+	"include": ["src"],
+	"exclude": ["node_modules", "dist", "**/*.test.tsx", "**/*.test.ts"]
+}
