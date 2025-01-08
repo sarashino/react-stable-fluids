@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useMemo, useState } from "react";
 import { useWindowSize } from "react-use";
-import { Vector2 } from "three";
+import { Camera, Vector2 } from "three";
 import { useThree, useFrame } from "@react-three/fiber";
 import AdvectionPass from "./Advection";
 import ExternalForcePass from "./ExternalForce";
@@ -108,70 +108,59 @@ const Output = ({ options }: OutputProps) => {
 		onChange: onResize,
 	});
 
-	const advectionRef = useRef(null);
-	const externalForceRef = useRef(null);
-	const viscousRef = useRef(null);
-	const divRef = useRef(null);
-	const poissonRef = useRef(null);
-	const pressureRef = useRef(null);
-
 	useEffect(() => {
 		onResize(width, height);
 		scene.add(planeRef.current);
 	}, []);
 
 	useFrame(() => {
-		advectionRef.current.render();
-		externalForceRef.current.render();
-		const v_out = viscousRef.current.render();
-		divRef.current.render(v_out);
-		const p_out = poissonRef.current.render();
-		pressureRef.current.render(v_out, p_out);
 		uniformsRef.current.velocity.value = fbos.vel_0.texture;
-	});
+		gl.render(scene, camera);
+	}, 99);
 
 	return (
 		<>
 			<AdvectionPass
-				ref={advectionRef}
 				src={fbos.vel_0}
 				dst={fbos.vel_1}
 				simProps={simProps}
+				priority={1}
 			/>
 			<ExternalForcePass
-				ref={externalForceRef}
 				dst={fbos.vel_1}
 				cellScale={cellScale}
 				cursorSize={options.cursor_size}
 				mouseForce={options.mouse_force}
+				priority={2}
 			/>
 			<ViscousPass
-				ref={viscousRef}
 				src={fbos.vel_1}
 				dst0={fbos.vel_viscous0}
 				dst1={fbos.vel_viscous1}
+				dst={fbos.vel_viscous_out}
 				simProps={simProps}
+				priority={3}
 			/>
 			<DivPass
-				ref={divRef}
-				src0={fbos.vel_viscous0}
-				src1={fbos.vel_viscous1}
+				src={fbos.vel_viscous_out}
 				dst={fbos.div}
 				simProps={simProps}
+				priority={4}
 			/>
 			<PoissonPass
-				ref={poissonRef}
 				src={fbos.div}
 				dst0={fbos.pressure_0}
 				dst1={fbos.pressure_1}
+				dst={fbos.pressure_out}
 				simProps={simProps}
+				priority={5}
 			/>
 			<PressurePass
-				ref={pressureRef}
-				src_p={fbos.pressure_0}
-				src_v={fbos.vel_viscous0}
+				src_p={fbos.pressure_out}
+				src_v={fbos.vel_viscous_out}
 				dst={fbos.vel_0}
 				simProps={simProps}
+				priority={6}
 			/>
 			<mesh ref={planeRef}>
 				<planeGeometry args={[2, 2]} />

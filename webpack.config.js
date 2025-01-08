@@ -8,7 +8,7 @@ module.exports = {
 	output: {
 		filename: "main.min.js",
 		path: `${__dirname}/dist`,
-		library: "StableFluids",
+		library: "ReactStableFluids",
 		libraryTarget: "umd",
 		globalObject: "this",
 	},
@@ -47,6 +47,18 @@ module.exports = {
 			commonjs2: "react-dom",
 			amd: "ReactDOM",
 			root: "ReactDOM",
+		},
+		three: {
+			commonjs: "three",
+			commonjs2: "three",
+			amd: "Three",
+			root: "Three",
+		},
+		"@react-three/fiber": {
+			commonjs: "@react-three/fiber",
+			commonjs2: "@react-three/fiber",
+			amd: "ReactThreeFiber",
+			root: "ReactThreeFiber",
 		},
 	},
 	optimization: {

@@ -1,25 +1,18 @@
-import React, {
-	useRef,
-	useEffect,
-	useMemo,
-	forwardRef,
-	useImperativeHandle,
-	useState,
-} from "react";
-import { useThree } from "@react-three/fiber";
+import React, { useEffect, useRef, useMemo } from "react";
+import { useThree, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import useMouseTracker from "./MouseTracker";
+import { RawShaderMaterial } from "three";
+import { BufferGeometry } from "three";
+import { PlaneGeometry } from "three";
 
 interface ExternalForcePassProps {
 	dst: THREE.WebGLRenderTarget;
 	cellScale: THREE.Vector2;
 	cursorSize: number;
 	mouseForce: number;
+	priority: number;
 }
-interface ExternalForcePassHandle {
-	render: () => void;
-}
-
 const mouse_vert = `
 precision highp float;
 
@@ -52,15 +45,18 @@ void main(){
     gl_FragColor = vec4(force * d, 0, 1);
 }
 	`;
-const ExternalForcePass = forwardRef<
-	ExternalForcePassHandle,
-	ExternalForcePassProps
->(({ dst, cellScale, cursorSize, mouseForce }, ref) => {
+const ExternalForcePass = ({
+	dst,
+	cellScale,
+	cursorSize,
+	mouseForce,
+	priority,
+}: ExternalForcePassProps) => {
 	const { gl } = useThree();
 	const scene = useMemo(() => new THREE.Scene(), []);
 	const camera = useMemo(() => new THREE.Camera(), []);
 	const mouseStat = useMouseTracker();
-	const [mouse, setMouse] = useState<THREE.Mesh | null>(null);
+	const mouseRef = useRef(null);
 
 	const uniformsRef = useRef({
 		px: {
@@ -78,21 +74,18 @@ const ExternalForcePass = forwardRef<
 	});
 
 	useEffect(() => {
-		const material = new THREE.RawShaderMaterial({
-			vertexShader: mouse_vert,
-			fragmentShader: external_force_frag,
-			blending: THREE.AdditiveBlending,
-			uniforms: uniformsRef.current,
-		});
-		const geometry = new THREE.PlaneGeometry(1, 1);
-		setMouse(new THREE.Mesh(geometry, material));
-	}, []);
+		if (mouseRef.current) {
+			scene.add(mouseRef.current);
+		}
 
-	useEffect(() => {
-		if (mouse) scene.add(mouse);
-	}, [mouse]);
+		return () => {
+			if (mouseRef.current) {
+				scene.remove(mouseRef.current);
+			}
+		};
+	}, [scene]);
 
-	const render = () => {
+	useFrame(() => {
 		const forceX = (mouseStat.diff.x / 2) * mouseForce;
 		const forceY = (mouseStat.diff.y / 2) * mouseForce;
 		mouseStat.diff.set(0, 0);
@@ -116,12 +109,19 @@ const ExternalForcePass = forwardRef<
 		gl.setRenderTarget(dst);
 		gl.render(scene, camera);
 		gl.setRenderTarget(null);
-	};
-	useImperativeHandle(ref, () => ({
-		render,
-	}));
+	}, priority);
 
-	return null;
-});
+	return (
+		<mesh ref={mouseRef}>
+			<planeGeometry arg={[1, 1]} />
+			<rawShaderMaterial
+				vertexShader={mouse_vert}
+				fragmentShader={external_force_frag}
+				blending={THREE.AdditiveBlending}
+				uniforms={uniformsRef.current}
+			/>
+		</mesh>
+	);
+};
 
 export default ExternalForcePass;

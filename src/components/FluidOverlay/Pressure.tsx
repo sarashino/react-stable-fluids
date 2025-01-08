@@ -20,9 +20,7 @@ interface PressurePassProps {
 		boundarySpace?: THREE.Vector2;
 		dt: number;
 	};
-}
-interface PressurePassHandle {
-	render: () => void;
+	priority: number;
 }
 
 const pressure_frag = `
@@ -48,58 +46,58 @@ void main(){
 }
 `;
 
-const PressurePass = forwardRef<PressurePassHandle, PressurePassProps>(
-	({ src_p, src_v, dst, simProps }, ref) => {
-		const { gl } = useThree();
-		const scene = useMemo(() => new THREE.Scene(), []);
-		const camera = useMemo(() => new THREE.Camera(), []);
-		const [plane, setPlane] = useState<THREE.Mesh | null>(null);
-		const uniformsRef = useRef({
-			boundarySpace: {
-				value: simProps.boundarySpace,
-			},
-			pressure: {
-				value: src_p.texture,
-			},
-			velocity: {
-				value: src_v.texture,
-			},
-			px: {
-				value: simProps.cellScale,
-			},
-			dt: {
-				value: simProps.dt,
-			},
-		});
+const PressurePass = ({
+	src_p,
+	src_v,
+	dst,
+	simProps,
+	priority,
+}: PressurePassProps) => {
+	const { gl } = useThree();
+	const scene = useMemo(() => new THREE.Scene(), []);
+	const camera = useMemo(() => new THREE.Camera(), []);
+	const planeRef = useRef(null);
+	const uniformsRef = useRef({
+		boundarySpace: {
+			value: simProps.boundarySpace,
+		},
+		pressure: {
+			value: src_p.texture,
+		},
+		velocity: {
+			value: src_v.texture,
+		},
+		px: {
+			value: simProps.cellScale,
+		},
+		dt: {
+			value: simProps.dt,
+		},
+	});
 
-		useEffect(() => {
-			const material = new THREE.RawShaderMaterial({
-				vertexShader: face_vert,
-				fragmentShader: pressure_frag,
-				uniforms: uniformsRef.current,
-			});
-			const geometry = new THREE.PlaneGeometry(2.0, 2.0);
-			setPlane(new THREE.Mesh(geometry, material));
-		}, []);
+	useEffect(() => {
+		if (planeRef.current) scene.add(planeRef.current);
+	}, []);
 
-		useEffect(() => {
-			if (plane) scene.add(plane);
-		}, [plane]);
+	useFrame(() => {
+		uniformsRef.current.pressure.value = src_p.texture;
+		uniformsRef.current.velocity.value = src_v.texture;
 
-		const render = (v_out, p_out) => {
-			uniformsRef.current.pressure.value = p_out.texture;
-			uniformsRef.current.velocity.value = v_out.texture;
+		gl.setRenderTarget(dst);
+		gl.render(scene, camera);
+		gl.setRenderTarget(null);
+	}, priority);
 
-			gl.setRenderTarget(dst);
-			gl.render(scene, camera);
-			gl.setRenderTarget(null);
-		};
-		useImperativeHandle(ref, () => ({
-			render,
-		}));
-
-		return null;
-	},
-);
+	return (
+		<mesh ref={planeRef}>
+			<planeGeometry args={[2.0, 2.0]} />
+			<rawShaderMaterial
+				vertexShader={face_vert}
+				fragmentShader={pressure_frag}
+				uniforms={uniformsRef.current}
+			/>
+		</mesh>
+	);
+};
 
 export default PressurePass;

@@ -15,14 +15,13 @@ interface PoissonPassProps {
 	src: THREE.WebGLRenderTarget;
 	dst0: THREE.WebGLRenderTarget;
 	dst1: THREE.WebGLRenderTarget;
+	dst: THREE.WebGLRenderTarget;
 	simProps: {
 		cellScale: THREE.Vector2;
 		boundarySpace?: THREE.Vector2;
 		iterations_poisson: number;
 	};
-}
-interface PoissonPassHandle {
-	render: () => void;
+	priority: number;
 }
 
 const poisson_frag = `
@@ -45,69 +44,69 @@ void main(){
 }
 `;
 
-const PoissonPass = forwardRef<PoissonPassHandle, PoissonPassProps>(
-	({ src, dst0, dst1, simProps }, ref) => {
-		const { gl } = useThree();
-		const scene = useMemo(() => new THREE.Scene(), []);
-		const camera = useMemo(() => new THREE.Camera(), []);
-		const [plane, setPlane] = useState<THREE.Mesh | null>(null);
-		const uniformsRef = useRef({
-			boundarySpace: {
-				value: simProps.boundarySpace,
-			},
-			pressure: {
-				value: dst0.texture,
-			},
-			divergence: {
-				value: src.texture,
-			},
-			px: {
-				value: simProps.cellScale,
-			},
-		});
+const PoissonPass = ({
+	src,
+	dst0,
+	dst1,
+	dst,
+	simProps,
+	priority,
+}: PoissonPassProps) => {
+	const { gl } = useThree();
+	const scene = useMemo(() => new THREE.Scene(), []);
+	const camera = useMemo(() => new THREE.Camera(), []);
+	const planeRef = useRef(null);
+	const uniformsRef = useRef({
+		boundarySpace: {
+			value: simProps.boundarySpace,
+		},
+		pressure: {
+			value: dst0.texture,
+		},
+		divergence: {
+			value: src.texture,
+		},
+		px: {
+			value: simProps.cellScale,
+		},
+	});
 
-		useEffect(() => {
-			const material = new THREE.RawShaderMaterial({
-				vertexShader: face_vert,
-				fragmentShader: poisson_frag,
-				uniforms: uniformsRef.current,
-			});
-			const geometry = new THREE.PlaneGeometry(2.0, 2.0);
-			setPlane(new THREE.Mesh(geometry, material));
-		}, []);
+	useEffect(() => {
+		if (planeRef.current) scene.add(planeRef.current);
+	}, []);
 
-		useEffect(() => {
-			if (plane) scene.add(plane);
-		}, [plane]);
+	useFrame(() => {
+		uniformsRef.current.divergence.value = src.texture;
+		let p_in: THREE.WebGLRenderTarget;
+		let p_out: THREE.WebGLRenderTarget;
 
-		const render = () => {
-			uniformsRef.current.divergence.value = src.texture;
-			let p_in: THREE.WebGLRenderTarget;
-			let p_out: THREE.WebGLRenderTarget;
-
-			for (let i = 0; i < simProps.iterations_poisson; i++) {
-				if (i % 2 === 0) {
-					p_in = dst0;
-					p_out = dst1;
-				} else {
-					p_in = dst1;
-					p_out = dst0;
-				}
-
-				uniformsRef.current.pressure.value = p_in.texture;
-				gl.setRenderTarget(p_out);
-				gl.render(scene, camera);
-				gl.setRenderTarget(null);
+		for (let i = 0; i < simProps.iterations_poisson; i++) {
+			if (i % 2 === 0) {
+				p_in = dst0;
+				p_out = dst1;
+			} else {
+				p_in = dst1;
+				p_out = dst0;
 			}
-			return p_out;
-		};
 
-		useImperativeHandle(ref, () => ({
-			render,
-		}));
+			uniformsRef.current.pressure.value = p_in.texture;
+			gl.setRenderTarget(p_out);
+			gl.render(scene, camera);
+			gl.setRenderTarget(null);
+		}
+		dst.texture = p_out.texture;
+	}, priority);
 
-		return null;
-	},
-);
+	return (
+		<mesh ref={planeRef}>
+			<planeGeometry args={[2.0, 2.0]} />
+			<rawShaderMaterial
+				vertexShader={face_vert}
+				fragmentShader={poisson_frag}
+				uniforms={uniformsRef.current}
+			/>
+		</mesh>
+	);
+};
 
 export default PoissonPass;

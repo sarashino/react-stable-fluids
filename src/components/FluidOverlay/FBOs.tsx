@@ -24,6 +24,9 @@ const useFBOs = (): FBOs => {
 	const vel_viscous1 = useMemo(
 		() => new WebGLRenderTarget(256, 256, { type: HalfFloatType }),
 	);
+	const vel_viscous_out = useMemo(
+		() => new WebGLRenderTarget(256, 256, { type: HalfFloatType }),
+	);
 
 	// for calc pressure
 	const div = useMemo(
@@ -37,8 +40,7 @@ const useFBOs = (): FBOs => {
 	const pressure_1 = useMemo(
 		() => new WebGLRenderTarget(256, 256, { type: HalfFloatType }),
 	);
-
-	const display = useMemo(
+	const pressure_out = useMemo(
 		() => new WebGLRenderTarget(256, 256, { type: HalfFloatType }),
 	);
 
@@ -49,10 +51,11 @@ const useFBOs = (): FBOs => {
 		vel_1,
 		vel_viscous0,
 		vel_viscous1,
+		vel_viscous_out,
 		div,
 		pressure_0,
 		pressure_1,
-		display,
+		pressure_out,
 	};
 
 	const fbosResize = (x: number, y: number) => {

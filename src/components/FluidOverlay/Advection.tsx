@@ -1,11 +1,4 @@
-import React, {
-	useRef,
-	useEffect,
-	forwardRef,
-	useImperativeHandle,
-	useMemo,
-	useState,
-} from "react";
+import React, { useRef, useEffect, useMemo } from "react";
 import { useThree, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
@@ -21,9 +14,7 @@ interface AdvectionPassProps {
 		isBounce?: boolean;
 		BFECC?: boolean;
 	};
-}
-interface AdvectionPassHandle {
-	render: () => void;
+	priority: number;
 }
 
 const line_vert = `
@@ -84,97 +75,110 @@ void main(){
     }
 }
 	`;
-const AdvectionPass = forwardRef<AdvectionPassHandle, AdvectionPassProps>(
-	({ src, dst, simProps }, ref) => {
-		const { gl } = useThree();
-		const scene = useMemo(() => new THREE.Scene(), []);
-		const camera = useMemo(() => new THREE.Camera(), []);
-		const [plane, setPlane] = useState<THREE.Mesh | null>(null);
-		const [lineSegs, setLineSegs] = useState<THREE.LineSegments | null>(null);
-		const uniformsRef = useRef({
-			boundarySpace: {
-				value: simProps.cellScale,
-			},
-			px: {
-				value: simProps.cellScale,
-			},
-			fboSize: {
-				value: simProps.fboSize,
-			},
-			velocity: {
-				value: src.texture,
-			},
-			dt: {
-				value: simProps.dt,
-			},
-			isBFECC: {
-				value: true,
-			},
-		});
+const AdvectionPass = ({
+	src,
+	dst,
+	simProps,
+	priority,
+}: AdvectionPassProps) => {
+	const { gl } = useThree();
+	const scene = useMemo(() => new THREE.Scene(), []);
+	const camera = useMemo(() => new THREE.Camera(), []);
+	const planeRef = useRef(null);
+	const lineSegsRef = useRef(null);
+	const uniformsRef = useRef({
+		boundarySpace: {
+			value: simProps.cellScale,
+		},
+		px: {
+			value: simProps.cellScale,
+		},
+		fboSize: {
+			value: simProps.fboSize,
+		},
+		velocity: {
+			value: src.texture,
+		},
+		dt: {
+			value: simProps.dt,
+		},
+		isBFECC: {
+			value: true,
+		},
+	});
 
-		useEffect(() => {
-			uniformsRef.current.dt.value = simProps.dt;
-			if (lineSegs) lineSegs.visible = simProps.isBounce;
-			uniformsRef.current.isBFECC.value = !!simProps.BFECC;
-		}, [simProps]);
+	useEffect(() => {
+		uniformsRef.current.dt.value = simProps.dt;
+		if (lineSegsRef.current) lineSegsRef.current.visible = simProps.isBounce;
+		uniformsRef.current.isBFECC.value = !!simProps.BFECC;
+	}, [simProps]);
 
-		useEffect(() => {
-			const material = new THREE.RawShaderMaterial({
-				vertexShader: face_vert,
-				fragmentShader: advection_frag,
-				uniforms: uniformsRef.current,
-			});
-			const geometry = new THREE.PlaneGeometry(2.0, 2.0);
-			setPlane(new THREE.Mesh(geometry, material));
+	useEffect(() => {
+		if (planeRef.current) {
+			scene.add(planeRef.current);
+		}
+		if (lineSegsRef.current) {
+			scene.add(lineSegsRef.current);
+		}
 
-			const boundaryG = new THREE.BufferGeometry();
-			const vertices_boundary = new Float32Array([
-				// left
-				-1, -1, 0, -1, 1, 0,
-
-				// top
-				-1, 1, 0, 1, 1, 0,
-
-				// right
-				1, 1, 0, 1, -1, 0,
-
-				// bottom
-				1, -1, 0, -1, -1, 0,
-			]);
-			boundaryG.setAttribute(
-				"position",
-				new THREE.BufferAttribute(vertices_boundary, 3),
-			);
-
-			const boundaryM = new THREE.RawShaderMaterial({
-				vertexShader: line_vert,
-				fragmentShader: advection_frag,
-				uniforms: uniformsRef.current,
-			});
-			setLineSegs(new THREE.LineSegments(boundaryG, boundaryM));
-		}, []);
-
-		useEffect(() => {
-			if (plane) scene.add(plane);
-		}, [plane]);
-		useEffect(() => {
-			if (lineSegs) scene.add(lineSegs);
-		}, [lineSegs]);
-
-		const render = () => {
-			uniformsRef.current.velocity.value = src.texture;
-
-			gl.setRenderTarget(dst);
-			gl.render(scene, camera);
-			gl.setRenderTarget(null);
+		return () => {
+			if (planeRef.current) {
+				scene.remove(planeRef.current);
+			}
+			if (lineSegsRef.current) {
+				scene.remove(lineSegsRef.current);
+			}
 		};
+	}, [scene]);
 
-		useImperativeHandle(ref, () => ({
-			render,
-		}));
+	useFrame(() => {
+		uniformsRef.current.velocity.value = src.texture;
 
-		return null;
-	},
-);
+		gl.setRenderTarget(dst);
+		gl.render(scene, camera);
+		gl.setRenderTarget(null);
+	}, priority);
+
+	const vertices_boundary = new Float32Array([
+		// left
+		-1, -1, 0, -1, 1, 0,
+
+		// top
+		-1, 1, 0, 1, 1, 0,
+
+		// right
+		1, 1, 0, 1, -1, 0,
+
+		// bottom
+		1, -1, 0, -1, -1, 0,
+	]);
+	return (
+		<>
+			<mesh ref={planeRef}>
+				<planeGeometry args={[2.0, 2.0]} />
+				<rawShaderMaterial
+					vertexShader={face_vert}
+					fragmentShader={advection_frag}
+					uniforms={uniformsRef.current}
+				/>
+			</mesh>
+
+			<lineSegments ref={lineSegsRef}>
+				<bufferGeometry>
+					<bufferAttribute
+						attach={"position"}
+						array={vertices_boundary}
+						itemSize={3}
+					/>
+				</bufferGeometry>
+				<rawShaderMaterial
+					vertexShader={line_vert}
+					fragmentShader={advection_frag}
+					uniforms={uniformsRef.current}
+				/>
+			</lineSegments>
+		</>
+	);
+};
 
 export default AdvectionPass;

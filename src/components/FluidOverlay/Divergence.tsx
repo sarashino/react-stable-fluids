@@ -1,28 +1,18 @@
-import React, {
-	useRef,
-	useEffect,
-	forwardRef,
-	useMemo,
-	useImperativeHandle,
-	useState,
-} from "react";
-import { useThree } from "@react-three/fiber";
+import React, { useRef, useEffect, useMemo } from "react";
+import { useThree, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
 import { face_vert } from "./Output";
 
 interface DivPassProps {
-	src0: THREE.WebGLRenderTarget;
-	src1: THREE.WebGLRenderTarget;
+	src: THREE.WebGLRenderTarget;
 	dst: THREE.WebGLRenderTarget;
 	simProps: {
 		cellScale: THREE.Vector2;
 		dt: number;
 		boundarySpace?: THREE.Vector2;
 	};
-}
-interface DivPassHandle {
-	render: () => void;
+	priority: number;
 }
 
 const div_frag = `
@@ -43,55 +33,48 @@ void main(){
 }
 `;
 
-const DivPass = forwardRef<DivPassHandle, DivPassProps>(
-	({ src0, src1, dst, simProps }, ref) => {
-		const { gl } = useThree();
-		const scene = useMemo(() => new THREE.Scene(), []);
-		const camera = useMemo(() => new THREE.Camera(), []);
-		const [plane, setPlane] = useState<THREE.Mesh | null>(null);
-		const uniformsRef = useRef({
-			boundarySpace: {
-				value: simProps.boundarySpace,
-			},
-			velocity: {
-				value: src1.texture,
-			},
-			px: {
-				value: simProps.cellScale,
-			},
-			dt: {
-				value: simProps.dt,
-			},
-		});
+const DivPass = ({ src, dst, simProps, priority }: DivPassProps) => {
+	const { gl } = useThree();
+	const scene = useMemo(() => new THREE.Scene(), []);
+	const camera = useMemo(() => new THREE.Camera(), []);
+	const planeRef = useRef(null);
+	const uniformsRef = useRef({
+		boundarySpace: {
+			value: simProps.boundarySpace,
+		},
+		velocity: {
+			value: src.texture,
+		},
+		px: {
+			value: simProps.cellScale,
+		},
+		dt: {
+			value: simProps.dt,
+		},
+	});
 
-		useEffect(() => {
-			const material = new THREE.RawShaderMaterial({
-				vertexShader: face_vert,
-				fragmentShader: div_frag,
-				uniforms: uniformsRef.current,
-			});
-			const geometry = new THREE.PlaneGeometry(2.0, 2.0);
-			setPlane(new THREE.Mesh(geometry, material));
-		}, []);
+	useEffect(() => {
+		if (planeRef.current) scene.add(planeRef.current);
+	}, []);
 
-		useEffect(() => {
-			if (plane) scene.add(plane);
-		}, [plane]);
+	useFrame(() => {
+		uniformsRef.current.velocity.value = src.texture;
 
-		const render = (v_out) => {
-			uniformsRef.current.velocity.value = v_out.texture;
+		gl.setRenderTarget(dst);
+		gl.render(scene, camera);
+		gl.setRenderTarget(null);
+	}, priority);
 
-			gl.setRenderTarget(dst);
-			gl.render(scene, camera);
-			gl.setRenderTarget(null);
-		};
-
-		useImperativeHandle(ref, () => ({
-			render,
-		}));
-
-		return null;
-	},
-);
+	return (
+		<mesh ref={planeRef}>
+			<planeGeometry args={[2.0, 2.0]} />
+			<rawShaderMaterial
+				vertexShader={face_vert}
+				fragmentShader={div_frag}
+				uniforms={uniformsRef.current}
+			/>
+		</mesh>
+	);
+};
 
 export default DivPass;
