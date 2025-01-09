@@ -22,9 +22,10 @@ module.exports = {
 						loader: "babel-loader",
 						options: {
 							presets: [
-								['@babel/preset-react', { runtime: 'automatic' }],
-								'@babel/preset-typescript',
-								["@babel/preset-env", { modules: false }]],
+								["@babel/preset-react", { runtime: "automatic" }],
+								"@babel/preset-typescript",
+								["@babel/preset-env", { modules: false }],
+							],
 						},
 					},
 				],

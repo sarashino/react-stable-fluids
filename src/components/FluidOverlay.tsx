@@ -4,6 +4,7 @@ import Output, { type OutputProps } from "./FluidOverlay/Output";
 
 export interface FluidOverlayProps {
 	options: OutputProps;
+	className: string;
 }
 
 const FluidOverlay = ({
@@ -24,6 +25,7 @@ const FluidOverlay = ({
 			onCreated={({ gl }) => {
 				gl.autoClear = false;
 			}}
+			className={className}
 		>
 			<Output options={options} />
 		</Canvas>
