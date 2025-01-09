@@ -1,6 +1,6 @@
 {
 	"name": "react-stable-fluids",
-	"version": "0.1.5",
+	"version": "0.1.6",
 	"main": "dist/main.min.js",
 	"license": "MIT",
 	"scripts": {
