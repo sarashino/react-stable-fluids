@@ -19,6 +19,7 @@ const FluidOverlay = ({
 		dt: 0.014,
 		BFECC: true,
 	},
+	className
 }: FluidOverlayProps) => {
 	return (
 		<Canvas
