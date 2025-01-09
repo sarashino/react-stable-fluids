@@ -5,6 +5,8 @@ import Output, { type OutputProps } from "./FluidOverlay/Output";
 export interface FluidOverlayProps {
 	options: OutputProps;
 	style: React.CSSProperties;
+	arialHidden: boolean;
+	role: string;
 }
 
 const FluidOverlay = ({
@@ -20,6 +22,8 @@ const FluidOverlay = ({
 		BFECC: true,
 	},
 	style,
+	arialHidden = ture,
+	role = "presentation",
 }: FluidOverlayProps) => {
 	return (
 		<Canvas
@@ -27,6 +31,8 @@ const FluidOverlay = ({
 				gl.autoClear = false;
 			}}
 			style={style}
+			aria-hidden={ariaHidden}
+			role={role}
 		>
 			<Output options={options} />
 		</Canvas>
