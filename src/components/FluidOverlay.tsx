@@ -5,7 +5,7 @@ import Output, { type OutputProps } from "./FluidOverlay/Output";
 export interface FluidOverlayProps {
 	options: OutputProps;
 	style: React.CSSProperties;
-	arialHidden: boolean;
+	ariaHidden: boolean;
 	role: string;
 }
 
@@ -22,7 +22,7 @@ const FluidOverlay = ({
 		BFECC: true,
 	},
 	style,
-	arialHidden = ture,
+	ariaHidden = true,
 	role = "presentation",
 }: FluidOverlayProps) => {
 	return (
