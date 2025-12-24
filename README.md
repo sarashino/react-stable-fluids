@@ -1,7 +1,7 @@
 # FLUID-THREE
 
-Cryout to @sarashino
-https://github.com/sarashino/react-stable-fluids
+Cryout to @mnmxmx
+https://github.com/mnmxmx/fluid-three?tab=readme-ov-file
 
 
 ## License
